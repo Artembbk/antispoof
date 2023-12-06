@@ -20,14 +20,13 @@ class BaseDataset(Dataset):
             config_parser: ConfigParser,
             wave_augs=None,
             spec_augs=None,
-            limit=None,
-            max_audio_length=None,
+            limit=None
     ):
         self.config_parser = config_parser
         self.wave_augs = wave_augs
         self.spec_augs = spec_augs
 
-        index = self._filter_records_from_dataset(index, max_audio_length, limit)
+        index = self._filter_records_from_dataset(index, limit)
         self._index: List[dict] = index
 
     def __getitem__(self, ind):
@@ -71,28 +70,6 @@ class BaseDataset(Dataset):
     def _filter_records_from_dataset(
             index: list, max_audio_length, limit
     ) -> list:
-        initial_size = len(index)
-        if max_audio_length is not None:
-            exceeds_audio_length = np.array([el["audio_len"] for el in index]) >= max_audio_length
-            _total = exceeds_audio_length.sum()
-            logger.info(
-                f"{_total} ({_total / initial_size:.1%}) records are longer then "
-                f"{max_audio_length} seconds. Excluding them."
-            )
-        else:
-            exceeds_audio_length = False
-
-        initial_size = len(index)
-
-        records_to_filter = exceeds_audio_length
-
-        if records_to_filter is not False and records_to_filter.any():
-            _total = records_to_filter.sum()
-            index = [el for el, exclude in zip(index, records_to_filter) if not exclude]
-            logger.info(
-                f"Filtered {_total}({_total / initial_size:.1%}) records  from dataset"
-            )
-
         if limit is not None:
             random.seed(42)  # best seed for deep learning
             random.shuffle(index)
