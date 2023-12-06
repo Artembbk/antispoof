@@ -29,6 +29,8 @@ def main(config):
     # setup data_loader instances
     dataloaders = get_dataloaders(config)
 
+    print(next(iter(dataloaders["train"])))
+
     # build model architecture, then print to console
     # model = config.init_obj(config["arch"], module_arch, n_class=len(text_encoder))
     # logger.info(model)
