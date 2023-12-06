@@ -68,7 +68,7 @@ class BaseDataset(Dataset):
 
     @staticmethod
     def _filter_records_from_dataset(
-            index: list, max_audio_length, limit
+            index: list, limit
     ) -> list:
         if limit is not None:
             random.seed(42)  # best seed for deep learning
