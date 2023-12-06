@@ -29,15 +29,15 @@ class ASVDataset(BaseDataset):
 
         with index_path.open() as f:
             index = f.readlines()
-            index = self.convert_to_dicts(index)
+            index = self.convert_to_dicts(index, part)
         return index
     
-    def convert_to_dicts(self, input_list):
+    def convert_to_dicts(self, input_list, part):
         result = []
         for line in input_list:
             parts = line.split()
             if len(parts) >= 4:
-                path = self._data_dir / "ASVspoof2019_LA_cm_protocols" / f"{parts[1]}.flac"
+                path = self._data_dir / f"ASVspoof2019_LA_{part}" / f"{parts[1]}.flac"
                 file_type = 1 if parts[-1].strip() == 'bonafide' else 0
                 result.append({"path": path, "type": file_type})
         return result
