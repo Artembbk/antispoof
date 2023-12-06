@@ -10,7 +10,7 @@ from antispoof.base.base_dataset import BaseDataset
 from antispoof.utils import ROOT_PATH
 from speechbrain.utils.data_utils import download_file
 from tqdm import tqdm
-from os import Path
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
