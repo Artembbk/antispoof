@@ -32,7 +32,7 @@ class BaseDataset(Dataset):
     def __getitem__(self, ind):
         data_dict = self._index[ind]
         audio_path = data_dict["path"]
-        audio_wave = self.load_audio(audio_path)
+        audio_wave = self.load_audio(audio_path).squeeze(0)
         # audio_wave, audio_spec = self.process_wave(audio_wave)
         return {
             "audio": audio_wave,
