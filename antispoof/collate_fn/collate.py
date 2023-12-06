@@ -19,7 +19,7 @@ def collate_fn(dataset_items: List[dict]):
     dataset_items = sorted(dataset_items, key=lambda x: -x["audio"].shape[1])
 
     for item in dataset_items: 
-        result_batch["audio"].append(item("audio"))
+        result_batch["audio"].append(item["audio"])
         result_batch['audio_path'].append(item['audio_path'])
         result_batch['type'].append(item['type'])
 
