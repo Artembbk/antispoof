@@ -37,7 +37,7 @@ class ASVDataset(BaseDataset):
         for line in input_list:
             parts = line.split()
             if len(parts) >= 4:
-                path = self._data_dir / "flac" / f"ASVspoof2019_LA_{part}" / f"{parts[1]}.flac"
+                path = self._data_dir / f"ASVspoof2019_LA_{part}" / "flac" / f"{parts[1]}.flac"
                 file_type = 1 if parts[-1].strip() == 'bonafide' else 0
                 result.append({"path": path, "type": file_type})
         return result
