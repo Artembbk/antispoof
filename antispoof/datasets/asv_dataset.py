@@ -22,7 +22,10 @@ class ASVDataset(BaseDataset):
         super().__init__(index, *args, **kwargs)
 
     def _get_or_load_index(self, part):
-        index_path = self._data_dir / "ASVspoof2019_LA_cm_protocols" / f"ASVspoof2019.LA.cm.{part}.trl.txt"
+        if part == "train":
+            index_path = self._data_dir / "ASVspoof2019_LA_cm_protocols" / f"ASVspoof2019.LA.cm.{part}.trn.txt"
+        else:
+            index_path = self._data_dir / "ASVspoof2019_LA_cm_protocols" / f"ASVspoof2019.LA.cm.{part}.trl.txt"
 
         with index_path.open() as f:
             index = f.readlines()
