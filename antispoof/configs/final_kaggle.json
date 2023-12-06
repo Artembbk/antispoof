@@ -1,0 +1,100 @@
+{
+  "name": "final",
+  "n_gpu": 1,
+  "preprocessing": {
+    "sr": 16000
+  },
+  "augmentations": {
+    "wave": [],
+    "spectrogram": []
+  },
+  "arch": {
+    "type": "",
+    "args": {
+      
+    }
+  },
+  "data": {
+    "train": {
+      "batch_size": 16,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "train",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "max_audio_length": 20.0
+          }
+        }
+      ]
+    },
+    "val": {
+      "batch_size": 16,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "dev",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "max_audio_length": 20.0,
+            "limit": 256
+          }
+        }
+      ]
+    },
+    "test": {
+      "batch_size": 16,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "eval",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "max_audio_length": 20.0,
+            "limit": 256
+          }
+        }
+      ]
+    }
+  },
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 3e-4
+    }
+  },
+  "loss": {
+    "type": "",
+    "args": {}
+  },
+  "metrics": {
+    "train": [
+    ],
+    "val": [
+    ]
+  },
+  "lr_scheduler": {
+    "type": "OneCycleLR",
+    "args": {
+      "steps_per_epoch": 3000,
+      "epochs": 50,
+      "anneal_strategy": "cos",
+      "max_lr": 3e-4,
+      "pct_start": 0.2
+    }
+  },
+  "trainer": {
+    "epochs": 50,
+    "save_dir": "saved/",
+    "save_period": 5,
+    "verbosity": 2,
+    "monitor": "min val_loss",
+    "visualize": "wandb",
+    "wandb_project": "asr_project",
+    "len_epoch": 3000,
+    "grad_norm_clip": 10
+  }
+}
