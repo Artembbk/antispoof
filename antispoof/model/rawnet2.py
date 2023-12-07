@@ -208,7 +208,7 @@ class FMS(nn.Module):
     
 class ResBlock(nn.Module):
     def __init__(self, in_channels, out_channels) -> None:
-        super(ResBlock).__init__()
+        super(ResBlock, self).__init__()
 
         self.bn1 = nn.BatchNorm1d(in_channels)
         self.leaky_relu = nn.LeakyReLU()
