@@ -225,8 +225,9 @@ class ResBlock(nn.Module):
         x = self.bn2(x)
         x = self.leaky_relu(x)
         x = self.conv2(x)
-        x = self.pool(x)
-        x = self.fms(x)
+        y = self.pool(x)
+        y = self.fms(y)
+        x = x + y
         return x
 
 class ResBlocks(nn.Module):
@@ -253,17 +254,18 @@ class ResBlocks(nn.Module):
         return self.res_blocks(x)
     
 class RawNet2(nn.Module):
-    def __init__(self, gru_num_layers=1):
+    def __init__(self):
         super(RawNet2, self).__init__()
 
         self.sinc = SincConv()
         self.res_blocks = ResBlocks()
-        self.gru = nn.GRU(128, 1024, gru_num_layers, True)
+        self.gru = nn.GRU(128, 1024, 1, True)
         self.fc = nn.Linear(1024, 1024)
     
     def forward(self, x):
         x = self.sinc(x)
         x = self.res_blocks(x)
+        print(x.shape)
         x = x.transpose(1, 2)
         _, x = self.gru(x)
         x = x.squeeze(0)
