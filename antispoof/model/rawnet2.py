@@ -264,6 +264,8 @@ class RawNet2(nn.Module):
     def forward(self, x):
         x = self.sinc(x)
         x = self.res_blocks(x)
-        x = self.gru(x)
+        x = x.transpose(1, 2)
+        _, x = self.gru(x)
+        x = x.squeeze(0)
         x = self.fc(x)
         return x
