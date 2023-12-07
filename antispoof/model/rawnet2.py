@@ -183,7 +183,7 @@ class SincConv(nn.Module):
         super(SincConv, self).__init__()
         self.sinc = SincConv_fast(1024, 251)
         self.pool = nn.MaxPool1d(3)
-        self.bn = nn.BatchNorm1d(128)
+        self.bn = nn.BatchNorm1d(1024)
         self.leaky_relu = nn.LeakyReLU()
 
     def forward(self, x):
