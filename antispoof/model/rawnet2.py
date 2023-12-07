@@ -230,7 +230,7 @@ class ResBlock(nn.Module):
         out = self.bn2(out)
         out = self.leaky_relu(out)
         out = self.conv2(out)
-
+        x = self.conv_downsample(x)
         out = out + x
         out = self.pool(out)
         out = self.fms(out)
