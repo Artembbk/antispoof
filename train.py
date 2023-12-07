@@ -30,11 +30,11 @@ def main(config):
     dataloaders = get_dataloaders(config)
 
     batch = next(iter(dataloaders["train"]))
-    print(batch['audio'].shape)
-    print(batch['audio'])
-    print(batch['audio_path'])
-    print(batch['type'])
-    print(batch['type'].shape)
+    from antispoof.model import SincConv
+
+    model = SincConv()
+    y = model(batch)
+    print(y.shape)
 
 
     # build model architecture, then print to console
