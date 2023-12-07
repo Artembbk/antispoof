@@ -30,12 +30,15 @@ def main(config):
     dataloaders = get_dataloaders(config)
 
     batch = next(iter(dataloaders["train"]))
-    from antispoof.model import SincConv
+    from antispoof.model import SincConv, ResBlock
 
     model = SincConv()
+    model2 = ResBlock(128, 20)
     print(batch['audio'].shape)
     y = model(batch['audio'].unsqueeze(1))
     print(y.shape)
+    z = model2(y)
+    print(z.shape)
 
 
     # build model architecture, then print to console

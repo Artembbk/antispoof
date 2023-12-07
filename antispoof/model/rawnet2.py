@@ -194,16 +194,38 @@ class SincConv(nn.Module):
         return x
 
 
-class FRM(nn.Module):
-    def __init__(self, nb_dim, do_add = True, do_mul = True):
-        super(FRM, self).__init__()
+class FMS(nn.Module):
+    def __init__(self, nb_dim):
+        super(FMS, self).__init__()
         self.fc = nn.Linear(nb_dim, nb_dim)
         self.sig = nn.Sigmoid()
-        self.do_add = do_add
-        self.do_mul = do_mul
     def forward(self, x):
         y = F.adaptive_avg_pool1d(x, 1).view(x.size(0), -1)
         y = self.sig(self.fc(y)).view(x.size(0), x.size(1), -1)
 
         x = x * y + y
         return x
+    
+class ResBlock(nn.Module):
+    def __init__(self, in_channels, out_channels) -> None:
+        super(ResBlock).__init__()
+
+        self.bn1 = nn.BatchNorm1d(in_channels)
+        self.leaky_relu = nn.LeakyReLU()
+        self.conv1 = nn.Conv1d(in_channels, out_channels, 3)
+        self.bn2 = nn.BatchNorm1d(out_channels)
+        self.conv2 = nn.Conv1d(out_channels, out_channels, 3)
+        self.pool = nn.MaxPool1d(3)
+        self.fms = FMS(out_channels)
+
+    def forward(self, x):
+        x = self.bn1(x)
+        x = self.leaky_relu(x)
+        x = self.conv1(x)
+        x = self.bn2(x)
+        x = self.leaky_relu(x)
+        x = self.conv2(x)
+        x = self.pool(x)
+        x = self.fms(x)
+        return x
+
