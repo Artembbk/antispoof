@@ -215,20 +215,26 @@ class ResBlock(nn.Module):
         self.conv1 = nn.Conv1d(in_channels, out_channels, 3)
         self.bn2 = nn.BatchNorm1d(out_channels)
         self.conv2 = nn.Conv1d(out_channels, out_channels, 3)
+        self.conv_downsample = nn.Conv1d(in_channels = in_channels,
+                out_channels = out_channels,
+                padding = 0,
+                kernel_size = 1,
+                stride = 1)
         self.pool = nn.MaxPool1d(3)
         self.fms = FMS(out_channels)
 
     def forward(self, x):
-        x = self.bn1(x)
-        x = self.leaky_relu(x)
-        x = self.conv1(x)
-        x = self.bn2(x)
-        x = self.leaky_relu(x)
-        x = self.conv2(x)
-        y = self.pool(x)
-        y = self.fms(y)
-        x = x + y
-        return x
+        out = self.bn1(x)
+        out = self.leaky_relu(out)
+        out = self.conv1(out)
+        out = self.bn2(out)
+        out = self.leaky_relu(out)
+        out = self.conv2(out)
+
+        out = out + x
+        out = self.pool(out)
+        out = self.fms(out)
+        return out
 
 class ResBlocks(nn.Module):
     def __init__(self):
