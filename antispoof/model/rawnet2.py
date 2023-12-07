@@ -212,9 +212,9 @@ class ResBlock(nn.Module):
 
         self.bn1 = nn.BatchNorm1d(in_channels)
         self.leaky_relu = nn.LeakyReLU()
-        self.conv1 = nn.Conv1d(in_channels, out_channels, 3)
+        self.conv1 = nn.Conv1d(in_channels, out_channels, 3, padding=1)
         self.bn2 = nn.BatchNorm1d(out_channels)
-        self.conv2 = nn.Conv1d(out_channels, out_channels, 3)
+        self.conv2 = nn.Conv1d(out_channels, out_channels, 3, padding=1)
         self.conv_downsample = nn.Conv1d(in_channels = in_channels,
                 out_channels = out_channels,
                 padding = 0,
