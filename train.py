@@ -33,7 +33,8 @@ def main(config):
     from antispoof.model import SincConv
 
     model = SincConv()
-    y = model(batch['audio'])
+    print(batch['audio'].shape)
+    y = model(batch['audio'].unsqueeze(1))
     print(y.shape)
 
 
