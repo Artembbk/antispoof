@@ -30,15 +30,12 @@ def main(config):
     dataloaders = get_dataloaders(config)
 
     batch = next(iter(dataloaders["train"]))
-    from antispoof.model import SincConv, ResBlock
+    from antispoof.model import RawNet2
 
-    model = SincConv()
-    model2 = ResBlock(128, 20)
+    model = RawNet2()
     print(batch['audio'].shape)
     y = model(batch['audio'].unsqueeze(1))
     print(y.shape)
-    z = model2(y)
-    print(z.shape)
 
 
     # build model architecture, then print to console

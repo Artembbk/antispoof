@@ -1,4 +1,3 @@
-from antispoof.model.rawnet2 import SincConv
-from antispoof.model.rawnet2 import ResBlock
+from antispoof.model.rawnet2 import RawNet2
 
-__all__ = ['SincConv', 'ResBlock']
+__all__ = ['RawNet2']

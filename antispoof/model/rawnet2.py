@@ -229,3 +229,35 @@ class ResBlock(nn.Module):
         x = self.fms(x)
         return x
 
+class ResBlocks(nn.Module):
+    def __init__(self):
+        super(ResBlocks, self).__init__()
+
+        self.res_blocks = []
+
+        for _ in range(2):
+            self.res_blocks.append(ResBlock(128, 20))
+
+        for _ in range(4):
+            self.res_blocks.append(ResBlock(20, 128))
+
+        self.res_blocks = nn.Sequential(*self.res_blocks)
+
+    def forward(self, x):
+        return self.res_blocks(x)
+    
+class RawNet2(nn.Module):
+    def __init__(self, gru_num_layers=1):
+        super(RawNet2, self).__init__()
+
+        self.sinc = SincConv()
+        self.res_blocks = ResBlocks()
+        self.gru = nn.GRU(128, 1024, gru_num_layers, True)
+        self.fc = nn.Linear(1024, 1024)
+    
+    def forward(self, x):
+        x = self.sinc(x)
+        x = self.res_blocks(x)
+        x = self.gru(x)
+        x = self.fc(x)
+        return x
