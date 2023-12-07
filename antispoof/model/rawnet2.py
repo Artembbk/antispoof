@@ -265,15 +265,14 @@ class RawNet2(nn.Module):
 
         self.sinc = SincConv()
         self.res_blocks = ResBlocks()
-        self.gru = nn.GRU(128, 1024, 1, True)
+        self.gru = nn.GRU(128, 1024, 1, batch_first=True)
         self.fc = nn.Linear(1024, 1024)
     
     def forward(self, x):
         x = self.sinc(x)
         x = self.res_blocks(x)
-        print(x.shape)
         x = x.transpose(1, 2)
         _, x = self.gru(x)
-        print(x.shape)
+        x = x.squeeze(0)
         x = self.fc(x)
         return x
