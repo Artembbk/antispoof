@@ -233,13 +233,19 @@ class ResBlocks(nn.Module):
     def __init__(self):
         super(ResBlocks, self).__init__()
 
+        in_channels = 128
+        out_channels = 20
+
         self.res_blocks = []
 
         for _ in range(2):
-            self.res_blocks.append(ResBlock(128, 20))
-
+            self.res_blocks.append(ResBlock(in_channels, out_channels))
+            in_channels = 20
+        
+        out_channels = 128
         for _ in range(4):
-            self.res_blocks.append(ResBlock(20, 128))
+            self.res_blocks.append(ResBlock(in_channels, out_channels))
+            in_channels = 128
 
         self.res_blocks = nn.Sequential(*self.res_blocks)
 
