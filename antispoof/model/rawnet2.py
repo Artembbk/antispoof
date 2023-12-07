@@ -274,6 +274,6 @@ class RawNet2(nn.Module):
         print(x.shape)
         x = x.transpose(1, 2)
         _, x = self.gru(x)
-        x = x.squeeze(0)
+        print(x.shape)
         x = self.fc(x)
         return x
