@@ -119,12 +119,13 @@ class SincConv_fast(nn.Module):
         self.n_ = self.n_.to(waveforms.device)
         self.window_ = self.window_.to(waveforms.device)
 
-        low = self.min_low_hz  + torch.abs(self.low_hz_)
-        low = low.to(waveforms.device) # eq. (5) + make sure low >= min_low_hz
+        low = self.min_low_hz  + torch.abs(self.low_hz_) # eq. (5) + make sure low >= min_low_hz
 
         high = torch.clamp(low + self.min_band_hz + torch.abs(self.band_hz_),self.min_low_hz,self.sample_rate/2) # eq. (6) + make sure band has length >= min_band_hz
-        high = high.to(waveforms.device) 
         band=(high-low)[:,0] # g[0] / 2
+
+        low = low.to(waveforms.device)
+        high = high.to(waveforms.device)
 
         f_times_t_low = torch.matmul(low, self.n_) # 2 * pi * n * freq / sr
         f_times_t_high = torch.matmul(high, self.n_)
