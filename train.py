@@ -24,68 +24,58 @@ np.random.seed(SEED)
 
 
 def main(config):
-    # logger = config.get_logger("train")
+    logger = config.get_logger("train")
 
     # setup data_loader instances
     dataloaders = get_dataloaders(config)
 
-    batch = next(iter(dataloaders["train"]))
-    from antispoof.model import RawNet2
-
-    model = RawNet2()
-    print(batch['audio'].shape)
-    y = model(batch['audio'].unsqueeze(1))
-    print(y.shape)
-
-
     # build model architecture, then print to console
-    # model = config.init_obj(config["arch"], module_arch, n_class=len(text_encoder))
-    # logger.info(model)
+    model = config.init_obj(config["arch"], module_arch)
+    logger.info(model)
 
-    # # prepare for (multi-device) GPU training
-    # device, device_ids = prepare_device(config["n_gpu"])
-    # model = model.to(device)
-    # if len(device_ids) > 1:
-    #     model = torch.nn.DataParallel(model, device_ids=device_ids)
+    # prepare for (multi-device) GPU training
+    device, device_ids = prepare_device(config["n_gpu"])
+    model = model.to(device)
+    if len(device_ids) > 1:
+        model = torch.nn.DataParallel(model, device_ids=device_ids)
 
-    # # get function handles of loss and metrics
-    # loss_module = config.init_obj(config["loss"], module_loss).to(device)
-    # metrics = {
-    #     "train": [],
-    #     "val": []
-    # }
-    # metrics["train"] = [
-    #     config.init_obj(metric_dict, module_metric, text_encoder=text_encoder)
-    #     for metric_dict in config["metrics"]["train"]
-    # ]
+    # get function handles of loss and metrics
+    loss_module = config.init_obj(config["loss"], torch.nn).to(device)
+    metrics = {
+        "train": [],
+        "val": []
+    }
+    metrics["train"] = [
+        config.init_obj(metric_dict, module_metric)
+        for metric_dict in config["metrics"]["train"]
+    ]
 
-    # metrics["val"] = [
-    #     config.init_obj(metric_dict, module_metric, text_encoder=text_encoder)
-    #     for metric_dict in config["metrics"]["val"]
-    # ]
+    metrics["val"] = [
+        config.init_obj(metric_dict, module_metric)
+        for metric_dict in config["metrics"]["val"]
+    ]
 
 
 
-    # # build optimizer, learning rate scheduler. delete every line containing lr_scheduler for
-    # # disabling scheduler
-    # trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    # optimizer = config.init_obj(config["optimizer"], torch.optim, trainable_params)
-    # lr_scheduler = config.init_obj(config["lr_scheduler"], torch.optim.lr_scheduler, optimizer)
+    # build optimizer, learning rate scheduler. delete every line containing lr_scheduler for
+    # disabling scheduler
+    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = config.init_obj(config["optimizer"], torch.optim, trainable_params)
+    lr_scheduler = config.init_obj(config["lr_scheduler"], torch.optim.lr_scheduler, optimizer)
 
-    # trainer = Trainer(
-    #     model,
-    #     loss_module,
-    #     metrics,
-    #     optimizer,
-    #     text_encoder=text_encoder,
-    #     config=config,
-    #     device=device,
-    #     dataloaders=dataloaders,
-    #     lr_scheduler=lr_scheduler,
-    #     len_epoch=config["trainer"].get("len_epoch", None)
-    # )
+    trainer = Trainer(
+        model,
+        loss_module,
+        metrics,
+        optimizer,
+        config=config,
+        device=device,
+        dataloaders=dataloaders,
+        lr_scheduler=lr_scheduler,
+        len_epoch=config["trainer"].get("len_epoch", None)
+    )
 
-    # trainer.train()
+    trainer.train()
 
 
 if __name__ == "__main__":

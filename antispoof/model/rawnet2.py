@@ -36,7 +36,7 @@ class SincConv_fast(nn.Module):
         return 700 * (10 ** (mel / 2595) - 1)
 
     def __init__(self, out_channels, kernel_size, sample_rate=16000, in_channels=1,
-                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=50, min_band_hz=50):
+                 stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=0, min_band_hz=0):
 
         super(SincConv_fast,self).__init__()
 
@@ -179,11 +179,11 @@ class SincConv_fast(nn.Module):
 
 
 class SincConv(nn.Module):
-    def __init__(self):
+    def __init__(self, out_channels, kernel_size, pooling_size):
         super(SincConv, self).__init__()
-        self.sinc = SincConv_fast(128, 1024)
-        self.pool = nn.MaxPool1d(3)
-        self.bn = nn.BatchNorm1d(128)
+        self.sinc = SincConv_fast(out_channels, kernel_size)
+        self.pool = nn.MaxPool1d(pooling_size)
+        self.bn = nn.BatchNorm1d(out_channels)
         self.leaky_relu = nn.LeakyReLU()
 
     def forward(self, x):
@@ -237,22 +237,18 @@ class ResBlock(nn.Module):
         return out
 
 class ResBlocks(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels, hidden_channels, out_channels):
         super(ResBlocks, self).__init__()
-
-        in_channels = 128
-        out_channels = 20
 
         self.res_blocks = []
 
         for _ in range(2):
-            self.res_blocks.append(ResBlock(in_channels, out_channels))
-            in_channels = 20
+            self.res_blocks.append(ResBlock(in_channels, hidden_channels))
+            in_channels = hidden_channels
         
-        out_channels = 128
         for _ in range(4):
-            self.res_blocks.append(ResBlock(in_channels, out_channels))
-            in_channels = 128
+            self.res_blocks.append(ResBlock(hidden_channels, out_channels))
+            hidden_channels = out_channels
 
         self.res_blocks = nn.Sequential(*self.res_blocks)
 
@@ -260,19 +256,27 @@ class ResBlocks(nn.Module):
         return self.res_blocks(x)
     
 class RawNet2(nn.Module):
-    def __init__(self):
+    def __init__(self, sinc_out_channels, sinc_conv_size, sinc_pooling_size, 
+                 res_h_channels, res_out_channels, leaky_relu_slope,
+                 gru_channels, gru_num_layers):
         super(RawNet2, self).__init__()
 
-        self.sinc = SincConv()
-        self.res_blocks = ResBlocks()
-        self.gru = nn.GRU(128, 1024, 1, batch_first=True)
-        self.fc = nn.Linear(1024, 1024)
+        self.sinc = SincConv(sinc_out_channels, sinc_conv_size, sinc_pooling_size)
+        self.res_blocks = ResBlocks(sinc_out_channels, res_h_channels, res_out_channels)
+        self.bn = nn.BatchNorm1d(res_out_channels)
+        self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
+        self.gru = nn.GRU(res_out_channels, gru_channels, gru_num_layers, batch_first=True)
+        self.fc = nn.Linear(gru_num_layers * gru_channels, gru_channels)
+        self.out = nn.Linear(gru_channels, 2)
     
     def forward(self, x):
-        x = self.sinc(x)
+        x = torch.abs(self.sinc(x))
         x = self.res_blocks(x)
+        x = self.bn(x)
+        x = self.leaky_relu(x)
         x = x.transpose(1, 2)
         _, x = self.gru(x)
-        x = x.squeeze(0)
+        x = x.view(1, -1)
         x = self.fc(x)
+        x = self.out(x)
         return x

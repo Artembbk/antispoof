@@ -9,49 +9,29 @@
     "spectrogram": []
   },
   "arch": {
-    "type": "",
+    "type": "RawNet2",
     "args": {
-      
+      "sinc_out_channels": 128,
+      "sinc_conv_size": 1024,
+      "sinc_pooling_size": 3,
+      "res_h_channels": 20,
+      "res_out_channels": 128,
+      "leaky_relu_slope": 0.3,
+      "gru_channels": 1024,
+      "gru_num_layers": 3
     }
   },
   "data": {
     "train": {
-      "batch_size": 16,
+      "batch_size": 1,
       "num_workers": 8,
       "datasets": [
         {
           "type": "ASVDataset",
           "args": {
             "part": "train",
-            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
-          }
-        }
-      ]
-    },
-    "val": {
-      "batch_size": 16,
-      "num_workers": 8,
-      "datasets": [
-        {
-          "type": "ASVDataset",
-          "args": {
-            "part": "dev",
             "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 256
-          }
-        }
-      ]
-    },
-    "test": {
-      "batch_size": 16,
-      "num_workers": 8,
-      "datasets": [
-        {
-          "type": "ASVDataset",
-          "args": {
-            "part": "eval",
-            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 256
+            "limit": 1
           }
         }
       ]
@@ -60,28 +40,32 @@
   "optimizer": {
     "type": "Adam",
     "args": {
-      "lr": 3e-4
+      "lr": 1e-4
     }
   },
   "loss": {
-    "type": "",
-    "args": {}
+    "type": "CrossEntropyLoss",
+    "args": {
+      "weight": [1.0, 9.0]
+    }
   },
   "metrics": {
     "train": [
+      {
+        "type": "EER",
+        "args": {
+          "name": "EER"
+        }
+      }
     ],
     "val": [
+      {
+        "type": "EER",
+        "args": {
+          "name": "EER"
+        }
+      }
     ]
-  },
-  "lr_scheduler": {
-    "type": "OneCycleLR",
-    "args": {
-      "steps_per_epoch": 3000,
-      "epochs": 50,
-      "anneal_strategy": "cos",
-      "max_lr": 3e-4,
-      "pct_start": 0.2
-    }
   },
   "trainer": {
     "epochs": 50,

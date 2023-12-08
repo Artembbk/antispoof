@@ -25,6 +25,7 @@ class BaseDataset(Dataset):
         self.config_parser = config_parser
         self.wave_augs = wave_augs
         self.spec_augs = spec_augs
+        self.target_length = 4*self.config_parser["preprocessing"]["sr"]
 
         index = self._filter_records_from_dataset(index, limit)
         self._index: List[dict] = index
@@ -33,7 +34,14 @@ class BaseDataset(Dataset):
         data_dict = self._index[ind]
         audio_path = data_dict["path"]
         audio_wave = self.load_audio(audio_path).squeeze(0)
-        # audio_wave, audio_spec = self.process_wave(audio_wave)
+        if len(audio_wave) < self.target_length:
+            repeats = self.target_length // len(audio_wave)
+            remainder = self.target_length % len(audio_wave)
+            resized_tensor = audio_wave.repeat(repeats)
+            resized_tensor = torch.cat([resized_tensor, audio_wave[:remainder]])
+        else:
+            resized_tensor = audio_wave[:self.target_length]
+        
         return {
             "audio": audio_wave,
             "audio_path": audio_path,
@@ -55,16 +63,7 @@ class BaseDataset(Dataset):
         with torch.no_grad():
             if self.wave_augs is not None:
                 audio_tensor_wave = self.wave_augs(audio_tensor_wave)
-            wave2spec = self.config_parser.init_obj(
-                self.config_parser["preprocessing"]["spectrogram"],
-                torchaudio.transforms,
-            )
-            audio_tensor_spec = wave2spec(audio_tensor_wave)
-            if self.spec_augs is not None:
-                audio_tensor_spec = self.spec_augs(audio_tensor_spec)
-            if self.log_spec:
-                audio_tensor_spec = torch.log(audio_tensor_spec + 1e-5)
-            return audio_tensor_wave, audio_tensor_spec
+            return audio_tensor_wave
 
     @staticmethod
     def _filter_records_from_dataset(
@@ -75,3 +74,15 @@ class BaseDataset(Dataset):
             random.shuffle(index)
             index = index[:limit]
         return index
+
+def random_crop_tensor(tensor, crop_length):
+    # Check if crop length is less than original tensor length
+    # Calculate the maximum starting index for cropping
+
+    # Generate a random starting index within the valid range
+    start_idx = torch.randint(0, len(tensor) - crop_length, (1,)).item()
+
+    # Perform the random crop
+    cropped_tensor = tensor[start_idx:start_idx + crop_length]
+
+    return cropped_tensor
