@@ -159,6 +159,7 @@ class SincConv_fast(nn.Module):
         self.filters = (band_pass).view(
             self.out_channels, 1, self.kernel_size)
 
+        print(waveforms.shape)
         return F.conv1d(waveforms, self.filters, stride=self.stride,
                         padding=self.padding, dilation=self.dilation,
                          bias=None, groups=1) # x[n] * g[n]
