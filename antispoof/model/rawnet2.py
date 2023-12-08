@@ -141,14 +141,10 @@ class SincConv_fast(nn.Module):
 
         # because self.n_ = 2 * pi * n / sr
 
+        band = band.to(waveforms.device)
         band_pass_left=((torch.sin(f_times_t_high)-torch.sin(f_times_t_low))/(self.n_/2))*self.window_ # Equivalent of Eq.4 of the reference paper (SPEAKER RECOGNITION FROM RAW WAVEFORM WITH SINCNET). I just have expanded the sinc and simplified the terms. This way I avoid several useless computations.
         band_pass_center = 2*band.view(-1,1) # g[0] = 2 * (f2 - f1) = 2 * band, w[0] = 1
         band_pass_right= torch.flip(band_pass_left,dims=[1]) # g[n] = g[-n]
-
-        print('band_pass_left', band_pass_left)
-        print('band_pass_center', band_pass_center)
-        print('---------------')
-
 
         band_pass=torch.cat([band_pass_left,band_pass_center,band_pass_right],dim=1) # create full g[n]
 
