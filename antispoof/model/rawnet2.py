@@ -210,6 +210,7 @@ class ResBlock(nn.Module):
         self.fms = FMS(out_channels)
 
     def forward(self, x):
+        print(x.shape)
         out = self.bn1(x)
         out = self.leaky_relu(out)
         out = self.conv1(out)
