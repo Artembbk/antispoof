@@ -210,7 +210,6 @@ class ResBlock(nn.Module):
         self.fms = FMS(out_channels)
 
     def forward(self, x):
-        print(x.shape)
         out = self.bn1(x)
         out = self.leaky_relu(out)
         out = self.conv1(out)
@@ -258,6 +257,7 @@ class RawNet2(nn.Module):
     
     def forward(self, audio, **kwargs):
         x = audio
+        print(x.shape)
         x = torch.abs(self.sinc(x))
         x = self.res_blocks(x)
         x = self.bn(x)
