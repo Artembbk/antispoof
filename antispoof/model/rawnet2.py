@@ -269,7 +269,8 @@ class RawNet2(nn.Module):
         self.fc = nn.Linear(gru_num_layers * gru_channels, gru_channels)
         self.out = nn.Linear(gru_channels, 2)
     
-    def forward(self, x):
+    def forward(self, audio, **kwargs):
+        x = audio
         x = torch.abs(self.sinc(x))
         x = self.res_blocks(x)
         x = self.bn(x)

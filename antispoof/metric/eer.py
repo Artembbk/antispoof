@@ -43,7 +43,7 @@ class EER(BaseMetric):
         eer = np.mean((frr[min_index], far[min_index]))
         return eer, thresholds[min_index]
 
-    def __call__(self, logits, type):
+    def __call__(self, logits, type, **kwargs):
         eer, _ = self.compute_eer(
         bonafide_scores=logits[type == 1],
         other_scores=logits[type== 0])
