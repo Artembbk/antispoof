@@ -263,7 +263,7 @@ class RawNet2(nn.Module):
         x = self.leaky_relu(x)
         x = x.transpose(1, 2)
         _, x = self.gru(x)
-        x = x.view(x.shape[0], -1)
+        x = x.view(x.shape[1], -1)
         x = self.fc(x)
         x = self.out(x)
         return x
