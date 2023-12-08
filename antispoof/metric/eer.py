@@ -37,6 +37,8 @@ class EER(BaseMetric):
         """ 
         Returns equal error rate (EER) and the corresponding threshold.
         """
+        bonafide_scores = bonafide_scores.cpu()
+        other_scores = other_scores.cpu()
         frr, far, thresholds = self.compute_det_curve(bonafide_scores, other_scores)
         abs_diffs = np.abs(frr - far)
         min_index = np.argmin(abs_diffs)
