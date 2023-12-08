@@ -61,7 +61,7 @@ class Trainer(BaseTrainer):
         """
         Move all necessary tensors to the HPU
         """
-        for tensor_for_gpu in []:
+        for tensor_for_gpu in ["audio", "type"]:
             batch[tensor_for_gpu] = batch[tensor_for_gpu].to(device)
         return batch
 
