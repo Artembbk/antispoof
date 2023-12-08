@@ -24,7 +24,7 @@ def collate_fn(dataset_items: List[dict]):
         result_batch['type'].append(item['type'])
 
     print(result_batch['audio'])
-    result_batch['audio'] = torch.tensor(result_batch['audio'])
+    result_batch['audio'] = pad_sequence(result_batch['audio'])
     result_batch['type'] = torch.tensor(result_batch["type"])
     
     return result_batch
