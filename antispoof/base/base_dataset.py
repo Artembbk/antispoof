@@ -37,10 +37,10 @@ class BaseDataset(Dataset):
         if len(audio_wave) < self.target_length:
             repeats = self.target_length // len(audio_wave)
             remainder = self.target_length % len(audio_wave)
-            resized_tensor = audio_wave.repeat(repeats)
-            resized_tensor = torch.cat([resized_tensor, audio_wave[:remainder]])
+            audio_wave = audio_wave.repeat(repeats)
+            audio_wave = torch.cat([audio_wave, audio_wave[:remainder]])
         else:
-            resized_tensor = audio_wave[:self.target_length]
+            audio_wave = audio_wave[:self.target_length]
         
         return {
             "audio": audio_wave,
