@@ -252,7 +252,7 @@ class RawNet2(nn.Module):
         self.bn = nn.BatchNorm1d(res_out_channels)
         self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
         self.gru = nn.GRU(res_out_channels, gru_channels, gru_num_layers, batch_first=True)
-        self.fc = nn.Linear(gru_num_layers * gru_channels, gru_channels)
+        self.fc = nn.Linear(gru_channels, gru_channels)
         self.out = nn.Linear(gru_channels, 2)
     
     def forward(self, audio, **kwargs):
