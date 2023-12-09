@@ -67,9 +67,6 @@ def main(config, out_file):
 
 
 
-
-
-
 if __name__ == "__main__":
     args = argparse.ArgumentParser(description="PyTorch Template")
     args.add_argument(

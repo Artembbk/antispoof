@@ -50,14 +50,7 @@
     }
   },
   "metrics": {
-    "train": [
-      {
-        "type": "EER",
-        "args": {
-          "name": "EER"
-        }
-      }
-    ],
+    "train": [],
     "val": [
       {
         "type": "EER",

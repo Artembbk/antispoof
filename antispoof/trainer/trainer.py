@@ -81,6 +81,12 @@ class Trainer(BaseTrainer):
         self.model.train()
         self.train_metrics.reset()
         self.writer.add_scalar("epoch", epoch)
+        metrics = {
+            "logits": [],
+            "type": [],
+            "loss": 0,
+            "grad_norm": 0
+        }
         for batch_idx, batch in enumerate(
                 tqdm(self.train_dataloader, desc="train", total=self.len_epoch)
         ):
@@ -100,30 +106,29 @@ class Trainer(BaseTrainer):
                     continue
                 else:
                     raise e
-            self.train_metrics.update("grad norm", self.get_grad_norm())
-            if batch_idx % self.log_step == 0:
-                self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
-                self.logger.debug(
-                    "Train Epoch: {} {} Loss: {:.6f}".format(
-                        epoch, self._progress(batch_idx), batch["loss"].item()
-                    )
-                )
-                # self._log_predictions(**batch)
-                # self._log_spectrogram(batch["spectrogram"])
-                self._log_scalars(self.train_metrics)
-                # we don't want to reset train metrics at the start of every epoch
-                # because we are interested in recent train metrics
-                last_train_metrics = self.train_metrics.result()
-                self.train_metrics.reset()
-            if batch_idx >= self.len_epoch:
-                break
-        log = last_train_metrics
+                
+            metrics["logits"].append(batch['logits'].cpu().detach())
+            metrics["type"].append(batch['types'].cpu().detach())
+            metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
+            metrics["grad_norm"] += self.get_grad_norm() / len(self.train_dataloader)
+        
+        metrics["logits"] = torch.cat(metrics["logits"])
+        metrics["type"] = torch.cat(metrics["type"])
+        self.train_metrics.update("loss", metrics["loss"])
+        for met in self.metrics["train"]:
+            self.train_metrics.update(met.name, met(**metrics))
+
+        self.logger.debug(
+            "Train Epoch: {} Loss: {:.6f}".format(
+                epoch, metrics["epoch_loss"]
+            )
+        )
+        self._log_scalars(self.train_metrics)
+        self.train_metrics.reset()
 
         for part, dataloader in self.evaluation_dataloaders.items():
-            val_log = self._evaluation_epoch(epoch, part, dataloader)
-            log.update(**{f"{part}_{name}": value for name, value in val_log.items()})
+            _ = self._evaluation_epoch(epoch, part, dataloader)
 
-        return log
 
     def process_batch(self, batch, is_train: bool, metrics: MetricTracker):
         batch = self.move_batch_to_device(batch, self.device)
@@ -143,9 +148,7 @@ class Trainer(BaseTrainer):
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()
 
-        metrics.update("loss", batch["loss"].item())
-        for met in self.metrics["train" if is_train else "val"]:
-            metrics.update(met.name, met(**batch))
+        
         return batch
 
     def _evaluation_epoch(self, epoch, part, dataloader):
@@ -157,6 +160,11 @@ class Trainer(BaseTrainer):
         """
         self.model.eval()
         self.evaluation_metrics.reset()
+        metrics = {
+            "logits": [],
+            "type": [],
+            "loss": 0,
+        }
         with torch.no_grad():
             for batch_idx, batch in tqdm(
                     enumerate(dataloader),
@@ -168,12 +176,18 @@ class Trainer(BaseTrainer):
                     is_train=False,
                     metrics=self.evaluation_metrics,
                 )
-            self.writer.set_step(epoch * self.len_epoch, part)
+                metrics["logits"].append(batch['logits'].cpu().detach())
+                metrics["type"].append(batch['types'].cpu().detach())
+                metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
+            
+
+            metrics["logits"] = torch.cat(metrics["logits"])
+            metrics["type"] = torch.cat(metrics["type"])
+            self.evaluation_metrics.update("loss", metrics["loss"])
+            for met in self.metrics["val"]:
+                self.evaluation_metrics.update(met.name, met(**metrics))
             self._log_scalars(self.evaluation_metrics)
 
-        # add histogram of model parameters to the tensorboard
-        for name, p in self.model.named_parameters():
-            self.writer.add_histogram(name, p, bins="auto")
         return self.evaluation_metrics.result()
 
     def _progress(self, batch_idx):
