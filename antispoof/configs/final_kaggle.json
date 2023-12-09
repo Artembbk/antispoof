@@ -43,7 +43,7 @@
           "type": "ASVDataset",
           "args": {
             "part": "dev",
-            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
           }
         }
       ]
