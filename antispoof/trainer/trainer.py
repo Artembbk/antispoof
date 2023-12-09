@@ -194,7 +194,7 @@ class Trainer(BaseTrainer):
             metrics["type"] = torch.cat(metrics["type"])
             for name, p in self.model.named_parameters():
                 if p.grad is not None:
-                    self.writer.add_histogram(f'Gradient Norm {name}', p.grad, step=epoch)
+                    self.writer.add_histogram(f'Gradient Norm {name}', p.grad)
             self.evaluation_metrics.update("loss", metrics["loss"])
             self._log_scalars(self.evaluation_metrics)
 
