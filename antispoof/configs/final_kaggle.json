@@ -80,7 +80,7 @@
     "verbosity": 2,
     "monitor": "min val_loss",
     "visualize": "wandb",
-    "wandb_project": "asr_project",
+    "wandb_project": "antispoof",
     "len_epoch": 100,
     "grad_norm_clip": 10
   }
