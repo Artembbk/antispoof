@@ -39,6 +39,7 @@ class EER(BaseMetric):
         bonafide_scores = bonafide_scores.cpu().detach()
         other_scores = other_scores.cpu().detach()
         frr, far, thresholds = self.compute_det_curve(bonafide_scores, other_scores)
+        print(frr, far, thresholds)
         abs_diffs = np.abs(frr - far)
         min_index = np.argmin(abs_diffs)
         eer = np.mean((frr[min_index], far[min_index]))
