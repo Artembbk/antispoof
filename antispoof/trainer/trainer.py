@@ -155,8 +155,7 @@ class Trainer(BaseTrainer):
             self.optimizer.step()
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()
-
-        
+   
         return batch
 
     def _evaluation_epoch(self, epoch, part, dataloader):
