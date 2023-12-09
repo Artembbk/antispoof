@@ -44,7 +44,6 @@
           "args": {
             "part": "dev",
             "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 320
           }
         }
       ]
@@ -81,7 +80,7 @@
     "monitor": "min val_loss",
     "visualize": "wandb",
     "wandb_project": "antispoof",
-    "len_epoch": 100,
+    "len_epoch": 500,
     "grad_norm_clip": 10
   }
 }
