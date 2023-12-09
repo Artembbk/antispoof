@@ -7,9 +7,6 @@ class EER(BaseMetric):
         super(EER, self).__init__(name)
 
     def compute_det_curve(self, target_scores, nontarget_scores):
-
-        print(target_scores)
-        print(nontarget_scores)
         n_scores = target_scores.size(0) + nontarget_scores.size(0)
         all_scores = np.concatenate((target_scores, nontarget_scores))
         labels = np.concatenate(
@@ -21,8 +18,6 @@ class EER(BaseMetric):
 
         # Compute false rejection and false acceptance rates
         tar_trial_sums = np.cumsum(labels)
-        print(n_scores)
-        print(tar_trial_sums)
         nontarget_trial_sums = nontarget_scores.size(0) - \
             (np.arange(1, n_scores + 1) - tar_trial_sums)
 
@@ -50,7 +45,6 @@ class EER(BaseMetric):
         return eer, thresholds[min_index]
 
     def __call__(self, logits, type, **kwargs):
-        print(logits)
         eer, _ = self.compute_eer(
         bonafide_scores=logits[type == 1, 1],
         other_scores=logits[type== 0, 0])

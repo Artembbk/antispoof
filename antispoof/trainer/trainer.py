@@ -108,9 +108,6 @@ class Trainer(BaseTrainer):
                         epoch, self._progress(batch_idx), batch["loss"].item()
                     )
                 )
-                self.writer.add_scalar(
-                    "learning rate", self.lr_scheduler.get_last_lr()[0]
-                )
                 # self._log_predictions(**batch)
                 # self._log_spectrogram(batch["spectrogram"])
                 self._log_scalars(self.train_metrics)
