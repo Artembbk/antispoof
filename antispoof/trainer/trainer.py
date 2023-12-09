@@ -109,8 +109,8 @@ class Trainer(BaseTrainer):
                 
             metrics["logits"].append(batch['logits'].cpu().detach())
             metrics["type"].append(batch['type'].cpu().detach())
-            metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
-            metrics["grad_norm"] += self.get_grad_norm() / len(self.train_dataloader)
+            metrics["loss"] += batch['loss'].item() / (self.len_epoch / len(batch['logits']))
+            metrics["grad_norm"] += self.get_grad_norm() / (self.len_epoch / len(batch['logits']))
         
         metrics["logits"] = torch.cat(metrics["logits"])
         metrics["type"] = torch.cat(metrics["type"])
@@ -178,7 +178,7 @@ class Trainer(BaseTrainer):
                 )
                 metrics["logits"].append(batch['logits'].cpu().detach())
                 metrics["type"].append(batch['type'].cpu().detach())
-                metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
+                metrics["loss"] += batch['loss'].item() / (self.len_epoch / len(batch['logits']))
             
 
             metrics["logits"] = torch.cat(metrics["logits"])
