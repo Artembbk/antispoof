@@ -1,0 +1,68 @@
+{
+  "name": "final",
+  "n_gpu": 1,
+  "preprocessing": {
+    "sr": 16000
+  },
+  "augmentations": {
+    "wave": [],
+    "spectrogram": []
+  },
+  "arch": {
+    "type": "RawNet2",
+    "args": {
+      "sinc_out_channels": 128,
+      "sinc_conv_size": 1024,
+      "sinc_pooling_size": 3,
+      "res_h_channels": 20,
+      "res_out_channels": 128,
+      "leaky_relu_slope": 0.3,
+      "gru_channels": 1024,
+      "gru_num_layers": 3
+    }
+  },
+  "data": {
+    "train": {
+      "batch_size": 1,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "train",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "limit": 1
+          }
+        }
+      ]
+    }
+  },
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 1e-4
+    }
+  },
+  "loss": {
+    "type": "CrossEntropyLoss",
+    "args": {
+      "weight": [1.0, 9.0]
+    }
+  },
+  "metrics": {
+    "train": [],
+    "val": [
+    ]
+  },
+  "trainer": {
+    "epochs": 50,
+    "save_dir": "saved/",
+    "save_period": 5,
+    "verbosity": 2,
+    "monitor": "min val_loss",
+    "visualize": "wandb",
+    "wandb_project": "antispoof",
+    "len_epoch": 100,
+    "grad_norm_clip": 10
+  }
+}
