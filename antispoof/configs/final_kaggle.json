@@ -23,15 +23,27 @@
   },
   "data": {
     "train": {
-      "batch_size": 2,
+      "batch_size": 32,
       "num_workers": 8,
       "datasets": [
         {
           "type": "ASVDataset",
           "args": {
             "part": "train",
-            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 2
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
+          }
+        }
+      ]
+    },
+    "val": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "dev",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
           }
         }
       ]
@@ -68,7 +80,7 @@
     "monitor": "min val_loss",
     "visualize": "wandb",
     "wandb_project": "asr_project",
-    "len_epoch": 3000,
+    "len_epoch": 10,
     "grad_norm_clip": 10
   }
 }
