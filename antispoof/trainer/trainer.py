@@ -120,6 +120,8 @@ class Trainer(BaseTrainer):
         self.train_metrics.update("loss", metrics["loss"])
         for met in self.metrics["train"]:
             self.train_metrics.update(met.name, met(**metrics))
+        
+        log = self.train_metrics.result()
 
         self.logger.debug(
             "Train Epoch: {} Loss: {:.6f}".format(
@@ -130,8 +132,10 @@ class Trainer(BaseTrainer):
         self.train_metrics.reset()
 
         for part, dataloader in self.evaluation_dataloaders.items():
-            _ = self._evaluation_epoch(epoch, part, dataloader)
+            val_log = self._evaluation_epoch(epoch, part, dataloader)
+            log.update(**{f"{part}_{name}": value for name, value in val_log.items()})
 
+        return log
 
     def process_batch(self, batch, is_train: bool, metrics: MetricTracker):
         batch = self.move_batch_to_device(batch, self.device)
@@ -187,8 +191,6 @@ class Trainer(BaseTrainer):
             metrics["logits"] = torch.cat(metrics["logits"])
             metrics["type"] = torch.cat(metrics["type"])
             self.evaluation_metrics.update("loss", metrics["loss"])
-            for met in self.metrics["val"]:
-                self.evaluation_metrics.update(met.name, met(**metrics))
             self._log_scalars(self.evaluation_metrics)
 
         return self.evaluation_metrics.result()
