@@ -19,6 +19,8 @@ class EER(BaseMetric):
 
         # Compute false rejection and false acceptance rates
         tar_trial_sums = np.cumsum(labels)
+        print(n_scores)
+        print(tar_trial_sums)
         nontarget_trial_sums = nontarget_scores.size(0) - \
             (np.arange(1, n_scores + 1) - tar_trial_sums)
 
