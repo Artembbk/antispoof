@@ -81,6 +81,6 @@
     "monitor": "min val_loss",
     "visualize": "wandb",
     "wandb_project": "antispoof",
-    "len_epoch": 50
+    "len_epoch": 700
   }
 }
