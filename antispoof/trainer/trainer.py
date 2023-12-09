@@ -108,7 +108,7 @@ class Trainer(BaseTrainer):
                     raise e
                 
             metrics["logits"].append(batch['logits'].cpu().detach())
-            metrics["type"].append(batch['types'].cpu().detach())
+            metrics["type"].append(batch['type'].cpu().detach())
             metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
             metrics["grad_norm"] += self.get_grad_norm() / len(self.train_dataloader)
         
@@ -177,7 +177,7 @@ class Trainer(BaseTrainer):
                     metrics=self.evaluation_metrics,
                 )
                 metrics["logits"].append(batch['logits'].cpu().detach())
-                metrics["type"].append(batch['types'].cpu().detach())
+                metrics["type"].append(batch['type'].cpu().detach())
                 metrics["loss"] += batch['loss'].item() / len(self.train_dataloader)
             
 
