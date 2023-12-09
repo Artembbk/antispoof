@@ -149,6 +149,8 @@ class Trainer(BaseTrainer):
             batch["logits"] = outputs
 
         batch["loss"] = self.criterion(batch["logits"], batch["type"])
+        print(batch["logits"])
+        print(batch["type"])
         if is_train:
             batch["loss"].backward()
             self._clip_grad_norm()
