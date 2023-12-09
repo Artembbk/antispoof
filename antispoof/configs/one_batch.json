@@ -23,7 +23,7 @@
   },
   "data": {
     "train": {
-      "batch_size": 1,
+      "batch_size": 32,
       "num_workers": 8,
       "datasets": [
         {
@@ -31,7 +31,7 @@
           "args": {
             "part": "train",
             "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 1
+            "limit": 32
           }
         }
       ]
