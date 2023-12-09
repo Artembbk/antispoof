@@ -8,6 +8,8 @@ class EER(BaseMetric):
 
     def compute_det_curve(self, target_scores, nontarget_scores):
 
+        print(target_scores)
+        print(nontarget_scores)
         n_scores = target_scores.size(0) + nontarget_scores.size(0)
         all_scores = np.concatenate((target_scores, nontarget_scores))
         labels = np.concatenate(
@@ -48,8 +50,6 @@ class EER(BaseMetric):
         return eer, thresholds[min_index]
 
     def __call__(self, logits, type, **kwargs):
-        print(logits.shape)
-        print(type.shape)
         eer, _ = self.compute_eer(
         bonafide_scores=logits[type == 1],
         other_scores=logits[type== 0])
