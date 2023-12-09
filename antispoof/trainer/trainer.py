@@ -128,6 +128,7 @@ class Trainer(BaseTrainer):
                 epoch, metrics["loss"]
             )
         )
+        print(self.train_metrics)
         self._log_scalars(self.train_metrics)
         self.train_metrics.reset()
 

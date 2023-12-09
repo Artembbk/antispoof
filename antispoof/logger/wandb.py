@@ -44,6 +44,7 @@ class WanDBWriter:
         return f"{scalar_name}_{self.mode}"
 
     def add_scalar(self, scalar_name, scalar):
+        print("dfsfsfd")
         self.wandb.log({
             self._scalar_name(scalar_name): scalar,
         }, step=self.step)
