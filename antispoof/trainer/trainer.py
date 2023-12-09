@@ -81,6 +81,7 @@ class Trainer(BaseTrainer):
         self.model.train()
         self.train_metrics.reset()
         self.writer.add_scalar("epoch", epoch)
+        self.writer.set_step(epoch)
         metrics = {
             "logits": [],
             "type": [],
@@ -167,6 +168,7 @@ class Trainer(BaseTrainer):
         """
         self.model.eval()
         self.evaluation_metrics.reset()
+        self.writer.set_step(epoch, part)
         metrics = {
             "logits": [],
             "type": [],
