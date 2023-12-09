@@ -123,7 +123,7 @@ class Trainer(BaseTrainer):
 
         self.logger.debug(
             "Train Epoch: {} Loss: {:.6f}".format(
-                epoch, metrics["epoch_loss"]
+                epoch, metrics["loss"]
             )
         )
         self._log_scalars(self.train_metrics)
