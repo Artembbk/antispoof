@@ -111,6 +111,9 @@ class Trainer(BaseTrainer):
             metrics["type"].append(batch['type'].cpu().detach())
             metrics["loss"] += batch['loss'].item() / self.len_epoch
             metrics["grad_norm"] += self.get_grad_norm() / self.len_epoch
+
+            if batch_idx >= self.len_epoch:
+                break
         
         metrics["logits"] = torch.cat(metrics["logits"])
         metrics["type"] = torch.cat(metrics["type"])
