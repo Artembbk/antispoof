@@ -45,8 +45,6 @@ class EER(BaseMetric):
         return eer, thresholds[min_index]
 
     def __call__(self, logits, type, **kwargs):
-        print(logits.shape)
-        print(type.shape)
         eer, _ = self.compute_eer(
         bonafide_scores=logits[type == 1, 1],
         other_scores=logits[type == 0, 0])

@@ -48,6 +48,19 @@
           }
         }
       ]
+    },
+    "test": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args":{
+            "part": "eval",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
+          }
+        }
+      ]
     }
   },
   "optimizer": {
