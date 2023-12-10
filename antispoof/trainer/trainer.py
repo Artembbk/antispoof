@@ -195,6 +195,9 @@ class Trainer(BaseTrainer):
                 if p.grad is not None:
                     self.writer.add_histogram(f'Gradient Norm {name}', p.grad, bins="auto")
             self.evaluation_metrics.update("loss", metrics["loss"])
+            for met in self.metrics["val"]:
+                self.evaluation_metrics.update(met.name, met(**metrics))
+        
             self._log_scalars(self.evaluation_metrics)
 
         return self.evaluation_metrics.result()
