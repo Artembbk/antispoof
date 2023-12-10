@@ -45,7 +45,7 @@
           "args": {
             "part": "dev",
             "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 32
+            "limit": 256
           }
         }
       ]
