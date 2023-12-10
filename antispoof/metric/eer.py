@@ -47,5 +47,5 @@ class EER(BaseMetric):
     def __call__(self, logits, type, **kwargs):
         eer, _ = self.compute_eer(
         bonafide_scores=logits[type == 1, 1],
-        other_scores=logits[type == 0, 0])
+        other_scores=logits[type == 0, 1])
         return eer
