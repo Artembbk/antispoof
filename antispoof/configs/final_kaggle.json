@@ -30,8 +30,7 @@
           "type": "ASVDataset",
           "args": {
             "part": "train",
-            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
-            "limit": 32
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
           }
         }
       ]
@@ -82,6 +81,6 @@
     "monitor": "min val_loss",
     "visualize": "wandb",
     "wandb_project": "antispoof",
-    "len_epoch": 1
+    "len_epoch": 1000
   }
 }
