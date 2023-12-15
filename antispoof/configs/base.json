@@ -18,7 +18,9 @@
       "res_out_channels": 128,
       "leaky_relu_slope": 0.3,
       "gru_channels": 1024,
-      "gru_num_layers": 3
+      "gru_num_layers": 3,
+      "min_low_hz": 0,
+      "min_band_hz": 0
     }
   },
   "data": {
