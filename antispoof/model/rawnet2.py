@@ -165,8 +165,9 @@ class SincConv_fast(nn.Module):
 
 
 class SincConv(nn.Module):
-    def __init__(self, out_channels, kernel_size, pooling_size, min_low_hz, min_band_hz):
+    def __init__(self, out_channels, kernel_size, pooling_size, min_low_hz, min_band_hz, abs_sinc):
         super(SincConv, self).__init__()
+        self.abs_sinc = abs_sinc
         self.sinc = SincConv_fast(out_channels, kernel_size, min_low_hz=min_low_hz, min_band_hz=min_band_hz)
         self.pool = nn.MaxPool1d(pooling_size)
         self.bn = nn.BatchNorm1d(out_channels)
@@ -174,6 +175,8 @@ class SincConv(nn.Module):
 
     def forward(self, x):
         x = self.sinc(x)
+        if self.abs_sinc:
+            x = torch.abs(x)
         x = self.pool(x)
         x = self.bn(x)
         x = self.leaky_relu(x)
@@ -244,12 +247,12 @@ class ResBlocks(nn.Module):
 class RawNet2(nn.Module):
     def __init__(self, sinc_out_channels, sinc_conv_size, sinc_pooling_size, 
                  res_h_channels, res_out_channels, leaky_relu_slope,
-                 gru_channels, gru_num_layers, min_low_hz, min_band_hz):
+                 gru_channels, gru_num_layers, min_low_hz, min_band_hz, abs_sinc):
         super(RawNet2, self).__init__()
 
 
         self.gru_num_layers = gru_num_layers
-        self.sinc = SincConv(sinc_out_channels, sinc_conv_size, sinc_pooling_size, min_low_hz, min_band_hz)
+        self.sinc = SincConv(sinc_out_channels, sinc_conv_size, sinc_pooling_size, min_low_hz, min_band_hz, abs_sinc)
         self.res_blocks = ResBlocks(sinc_out_channels, res_h_channels, res_out_channels)
         self.bn = nn.BatchNorm1d(res_out_channels)
         self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
@@ -259,7 +262,7 @@ class RawNet2(nn.Module):
     
     def forward(self, audio, **kwargs):
         x = audio
-        x = torch.abs(self.sinc(x))
+        x = self.sinc(x)
         x = self.res_blocks(x)
         if self.gru_num_layers != 1:
             x = self.bn(x)

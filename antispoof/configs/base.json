@@ -20,7 +20,8 @@
       "gru_channels": 1024,
       "gru_num_layers": 3,
       "min_low_hz": 0,
-      "min_band_hz": 0
+      "min_band_hz": 0,
+      "abs_sinc": true
     }
   },
   "data": {
