@@ -1,5 +1,5 @@
 {
-  "name": "final",
+  "name": "base",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000
@@ -43,6 +43,20 @@
           "type": "ASVDataset",
           "args": {
             "part": "dev",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "limit": 1024
+          }
+        }
+      ]
+    },
+    "test": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "eval",
             "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
           }
         }
@@ -74,13 +88,13 @@
     ]
   },
   "trainer": {
-    "epochs": 50,
+    "epochs": 10,
     "save_dir": "saved/",
     "save_period": 5,
     "verbosity": 2,
     "monitor": "min val_loss",
     "visualize": "wandb",
     "wandb_project": "antispoof",
-    "len_epoch": 1000
+    "len_epoch": 2000
   }
 }
