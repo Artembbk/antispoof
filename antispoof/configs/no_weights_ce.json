@@ -1,5 +1,5 @@
 {
-  "name": "base sinc 20",
+  "name": "no weights ce",
   "n_gpu": 1,
   "preprocessing": {
     "sr": 16000
