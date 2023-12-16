@@ -1,0 +1,103 @@
+{
+  "name": "filter length",
+  "n_gpu": 1,
+  "preprocessing": {
+    "sr": 16000
+  },
+  "augmentations": {
+    "wave": [],
+    "spectrogram": []
+  },
+  "arch": {
+    "type": "RawNet2",
+    "args": {
+      "sinc_out_channels": 20,
+      "sinc_conv_size": 129,
+      "sinc_pooling_size": 3,
+      "res_h_channels": 20,
+      "res_out_channels": 128,
+      "leaky_relu_slope": 0.3,
+      "gru_channels": 1024,
+      "gru_num_layers": 3,
+      "min_low_hz": 0,
+      "min_band_hz": 0,
+      "abs_sinc": true
+    }
+  },
+  "data": {
+    "train": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "train",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
+          }
+        }
+      ]
+    },
+    "val": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "dev",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA",
+            "limit": 1024
+          }
+        }
+      ]
+    },
+    "test": {
+      "batch_size": 32,
+      "num_workers": 8,
+      "datasets": [
+        {
+          "type": "ASVDataset",
+          "args": {
+            "part": "eval",
+            "data_dir": "/kaggle/input/asvpoof-2019-dataset/LA/LA"
+          }
+        }
+      ]
+    }
+  },
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 1e-4,
+      "weight_decay": 1e-4
+    }
+  },
+  "loss": {
+    "type": "CrossEntropyLoss",
+    "args": {
+      "weight": [1.0, 9.0]
+    }
+  },
+  "metrics": {
+    "train": [],
+    "val": [
+      {
+        "type": "EER",
+        "args": {
+          "name": "EER"
+        }
+      }
+    ]
+  },
+  "trainer": {
+    "epochs": 10,
+    "save_dir": "saved/",
+    "save_period": 5,
+    "verbosity": 2,
+    "monitor": "min val_loss",
+    "visualize": "wandb",
+    "wandb_project": "antispoof",
+    "len_epoch": 2000
+  }
+}
