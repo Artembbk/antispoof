@@ -165,13 +165,13 @@ class SincConv_fast(nn.Module):
 
 
 class SincConv(nn.Module):
-    def __init__(self, out_channels, kernel_size, pooling_size, min_low_hz, min_band_hz, abs_sinc):
+    def __init__(self, out_channels, kernel_size, pooling_size, min_low_hz, min_band_hz, abs_sinc, leaky_relu_slope):
         super(SincConv, self).__init__()
         self.abs_sinc = abs_sinc
         self.sinc = SincConv_fast(out_channels, kernel_size, min_low_hz=min_low_hz, min_band_hz=min_band_hz)
         self.pool = nn.MaxPool1d(pooling_size)
         self.bn = nn.BatchNorm1d(out_channels)
-        self.leaky_relu = nn.LeakyReLU()
+        self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
 
     def forward(self, x):
         x = self.sinc(x)
@@ -196,11 +196,11 @@ class FMS(nn.Module):
         return x
     
 class ResBlock(nn.Module):
-    def __init__(self, in_channels, out_channels) -> None:
+    def __init__(self, in_channels, out_channels, leaky_relu_slope) -> None:
         super(ResBlock, self).__init__()
 
         self.bn1 = nn.BatchNorm1d(in_channels)
-        self.leaky_relu = nn.LeakyReLU()
+        self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
         self.conv1 = nn.Conv1d(in_channels, out_channels, 3, padding=1)
         self.bn2 = nn.BatchNorm1d(out_channels)
         self.conv2 = nn.Conv1d(out_channels, out_channels, 3, padding=1)
@@ -226,17 +226,17 @@ class ResBlock(nn.Module):
         return out
 
 class ResBlocks(nn.Module):
-    def __init__(self, in_channels, hidden_channels, out_channels):
+    def __init__(self, in_channels, hidden_channels, out_channels, leaky_relu_slope):
         super(ResBlocks, self).__init__()
 
         self.res_blocks = []
 
         for _ in range(2):
-            self.res_blocks.append(ResBlock(in_channels, hidden_channels))
+            self.res_blocks.append(ResBlock(in_channels, hidden_channels, leaky_relu_slope))
             in_channels = hidden_channels
         
         for _ in range(4):
-            self.res_blocks.append(ResBlock(hidden_channels, out_channels))
+            self.res_blocks.append(ResBlock(hidden_channels, out_channels, leaky_relu_slope))
             hidden_channels = out_channels
 
         self.res_blocks = nn.Sequential(*self.res_blocks)
@@ -252,8 +252,8 @@ class RawNet2(nn.Module):
 
 
         self.gru_num_layers = gru_num_layers
-        self.sinc = SincConv(sinc_out_channels, sinc_conv_size, sinc_pooling_size, min_low_hz, min_band_hz, abs_sinc)
-        self.res_blocks = ResBlocks(sinc_out_channels, res_h_channels, res_out_channels)
+        self.sinc = SincConv(sinc_out_channels, sinc_conv_size, sinc_pooling_size, min_low_hz, min_band_hz, abs_sinc, leaky_relu_slope)
+        self.res_blocks = ResBlocks(sinc_out_channels, res_h_channels, res_out_channels, leaky_relu_slope)
         self.bn = nn.BatchNorm1d(res_out_channels)
         self.leaky_relu = nn.LeakyReLU(leaky_relu_slope)
         self.gru = nn.GRU(res_out_channels, gru_channels, gru_num_layers, batch_first=True)
